@@ -513,7 +513,24 @@
             submitBtn.onclick = () => {
                 input.disabled = true;
                 submitBtn.disabled = true;
-                const normalize = (str) => str.replace(/[أإآ]/g, 'ا').replace(/[ة]/g, 'ه').replace(/[\s\u064B-\u0652]/g, '').trim();
+                const normalize = (str) => {
+    if (!str) return '';
+    return str
+        // إزالة جميع علامات التشكيل (الحركات)
+        .replace(/[\u064B-\u0652]/g, '') 
+        // إزالة علامات الوقف والمدود الصغيرة
+        .replace(/[\u0610-\u061A\u0656-\u065F]/g, '') 
+        // توحيد أشكال الألف
+        .replace(/[أإآ]/g, 'ا') 
+        // توحيد الياء المقصورة والعادية
+        .replace(/[ى]/g, 'ي') 
+        // توحيد التاء المربوطة بالهاء
+        .replace(/[ة]/g, 'ه') 
+        // إزالة المسافات الزائدة
+        .replace(/\s+/g, '') 
+        .trim();
+};
+
                 const isCorrect = normalize(input.value) === normalize(correctAnswer);
                 showResult(isCorrect, input, `الإجابة الصحيحة: <div class="ayah-text">${correctAnswer}</div>`);
             };
@@ -717,7 +734,6 @@
             const message = `
 📊 <b>تقرير اختبار قرآن جديد</b> 📊
 
-👤 <b>الاسم:</b> ${reportData.userName}
 📖 <b>المجال:</b> ${reportData.scope}
 
 📝 <b>الأسئلة:</b> ${reportData.totalQuestions}
